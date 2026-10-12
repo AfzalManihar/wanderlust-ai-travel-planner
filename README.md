@@ -1,133 +1,235 @@
-## 🌍 MCP Travel Planner Agent Team
+# 🌍 Wanderlust AI Travel Planner
 
-A sophisticated Streamlit-based AI travel planning application that creates extremely detailed, personalized travel itineraries using multiple MCP servers and Google Maps integration. The app uses Airbnb MCP for real accommodation data and a custom Google Maps MCP for precise distance calculations and location services.
+🚀 **Live Demo:** [Click here to try Wanderlust AI Travel Planner](YOUR_STREAMLIT_APP_URL)
+
+An AI-powered travel planning application built with **Python, Agno, and Groq** that generates personalized, day-by-day travel itineraries based on destination, travel dates, trip duration, budget, arrival airport, and travel preferences.
+
+The application combines LLM-powered itinerary generation, web search, optional flight data, and calendar export to help users plan their trips through a simple interface.
 
 ## ✨ Features
 
 ### 🤖 AI-Powered Travel Planning
-- **Extremely Detailed Itineraries**: Creates comprehensive day-by-day schedules with specific timing, addresses, and costs
-- **Distance Calculations**: Uses Google Maps MCP to calculate precise distances and travel times between all locations
-- **Real-Time Accommodation Data**: Integrates with Airbnb MCP for current pricing and availability
-- **Personalized Recommendations**: Customizes itineraries based on user preferences and budget constraints
+- Generates personalized, day-by-day travel itineraries.
+- Organizes activities into morning, afternoon, and evening schedules.
+- Considers the destination, travel dates, duration, budget, and user preferences.
+- Uses Agno agents with Groq-hosted language models for itinerary generation.
 
-### 🏨 Airbnb MCP Integration
-- **Real accommodation listings** with current pricing and availability
-- **Property details** including amenities, guest reviews, and booking availability
-- **Budget-conscious recommendations** filtered by location and preferences
-- **Direct booking information** with real-time rates
+### 🔍 Web Search Integration
+- Uses the Tavily API to search for travel-related information.
+- Helps discover attractions, restaurants, local recommendations, and practical travel tips.
+- Provides additional context for itinerary generation.
 
-### 🗺️ Google Maps MCP Integration
-- **Precise distance calculations** between all locations in the itinerary
-- **Travel time estimates** for transportation planning
-- **Location services** for points of interest and navigation
-- **Address verification** for all recommended places
-- **Transportation optimization** with turn-by-turn guidance
+### ✈️ Flight Information
+- Integrates with the AviationStack API for flight information.
+- Uses the specified airport code to retrieve available flight data when the API is configured.
+- Supports flight-related information alongside itinerary planning.
 
-### 🔍 Google Search Integration
-- **Current weather forecasts** with detailed clothing recommendations
-- **Restaurant research** with specific addresses, price ranges, and reviews
-- **Attraction details** including opening hours, ticket prices, and best visiting times
-- **Local insights** and cultural information
-- **Practical travel tips** including currency exchange and safety information
+### 📅 Calendar Export
+- Exports itinerary information as an `.ics` calendar file.
+- Supports importing calendar events into compatible calendar applications, such as Google Calendar, Apple Calendar, and Outlook.
 
-### 📅 Additional Features
-- **Calendar Export**: Download your itinerary as a .ics file for Google Calendar, Apple Calendar, or Outlook
-- **Comprehensive Cost Breakdown**: Detailed budget analysis for all trip components
-- **Buffer Time Planning**: Includes travel time and unexpected delays in scheduling
-- **Multiple Accommodation Options**: Provides 3 accommodation choices with distances from city center
+### 💰 Budget-Aware Planning
+- Considers the user's stated travel budget and preferences.
+- Generates suggested travel activities and budget breakdowns.
+- Helps users organize their trip within their planned spending limit.
 
+### 🔐 Secure Configuration
+- Stores API credentials in a local `secrets.toml` configuration file.
+- Supports environment-specific configuration.
+- Uses `.gitignore` to help prevent sensitive files from being committed to GitHub.
 
-## Setup
+## 🛠️ Tech Stack
 
-### Requirements
+| Category | Technologies |
+|---|---|
+| Programming Language | Python 3.13 |
+| Web UI | Streamlit |
+| AI Agent Framework | Agno |
+| LLM API | Groq API |
+| AI Models | LLaMA 3.3 70B, GPT-OSS-20B, depending on model availability |
+| Web Search | Tavily API |
+| Flight Data | AviationStack API |
+| HTTP Requests | requests |
+| Calendar Export | icalendar |
+| Configuration | tomllib |
+| Date Handling | datetime |
+| File Handling | pathlib |
+| Text Parsing | re |
+| Code Editor | Visual Studio Code |
+| Version Control | Git and GitHub |
+| Deployment | Streamlit Community Cloud |
+| Terminal | PowerShell |
 
-1. **API Keys** (Both Required):
-    - **OpenAI API Key**: Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-    - **Google Maps API Key**: Get your API key from [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+## 🧠 AI Models
 
-2. **Python 3.8+**: Ensure you have Python 3.8 or higher installed.
+The application can use supported language models available through Groq.
 
-3. **MCP Servers**: The app automatically connects to:
-    - **Airbnb MCP Server**: Provides real Airbnb listings and pricing data
-    - **Custom Google Maps MCP**: Enables precise distance calculations and location services
+- **LLaMA 3.3 70B** — Meta's language model, when available for the configured Groq account.
+- **GPT-OSS-20B** — OpenAI's open-weight model served through Groq, when available.
 
-### Installation
+The configured model is controlled by the `GROQ_MODEL` setting. Model availability may change, so use a model ID currently supported by your Groq account.
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
-   cd awesome-llm-apps/mcp_ai_agents/ai_travel_planner_mcp_agent_team
-   ```
+## 🔑 APIs Required
 
-2. Install the required Python packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 1. Groq API
+Used for AI-powered itinerary generation.
 
-### Running the App
+Get an API key: https://console.groq.com/keys
 
-1. Start the Streamlit app:
-   ```bash
-   streamlit run app.py
-   ```
+### 2. Tavily API
+Used for travel-related web searches.
 
-2. In the app interface:
-   - Enter your **OpenAI API key** in the sidebar
-   - Enter your **Google Maps API key** in the sidebar
-   - Specify your destination, trip duration, budget, and preferences
-   - Click "🎯 Generate Itinerary" to create your detailed travel plan
+Get an API key: https://app.tavily.com/
 
-3. **Optional**: Download your itinerary as a calendar file (.ics) for import into Google Calendar, Apple Calendar, or Outlook
+### 3. AviationStack API (Optional)
+Used to retrieve flight information.
 
-## Troubleshooting
+Get an API key: https://aviationstack.com/
 
-### Common Issues & Solutions
+## 🚀 Getting Started
 
-- **"Error: [error message]"**: Check your internet connection and API keys
-  - Verify both OpenAI and Google Maps API keys are entered correctly
-  - Try again in a few minutes - the MCP servers may be temporarily unavailable
+### Prerequisites
+- Python 3.13 or a compatible Python version.
+- Git.
+- API keys for Groq and Tavily.
+- An AviationStack API key if flight data is required.
 
-- **Missing distance information**: Google Maps MCP connection issue
-  - Check your Google Maps API key validity
-  - Ensure your API key has the necessary permissions for Maps API
-  - Try refreshing the page and entering the keys again
+### 1. Clone the Repository
 
-- **Slow response times**: MCP servers can take time to respond
-  - The app has a 60-second timeout configured
-  - Wait for the process to complete - detailed itineraries take time to generate
-
-- **Network/Firewall issues**: Some corporate networks may block MCP connections
-  - Try from a different network
-  - Use a VPN if necessary
-  - The app will show connection errors if MCP servers are unreachable
-
-### API Key Issues
-
-- **OpenAI API Key**: Make sure you have credits in your OpenAI account and the key is valid
-- **Google Maps API Key**: Ensure the key has Maps API enabled and proper billing setup
-
-### Tool Status
-
-The app will show you which data sources were successfully used:
-- 🏨 **"Your travel itinerary is ready with Airbnb data!"** = Airbnb MCP connected successfully
-- 📝 **"Used general knowledge for accommodation suggestions"** = Airbnb MCP failed, using general knowledge as fallback
-
-**The app is designed to work reliably!** Even if MCP connections fail, it will generate comprehensive itineraries using available tools and information.
-
-## Project Structure
-
-```
-├── app.py              # Main Streamlit application with MCP integration
-├── requirements.txt    # Python dependencies
-└── README.md          # This documentation
+```bash
+git clone https://github.com/AfzalManihar/wanderlust-ai-travel-planner.git
+cd wanderlust-ai-travel-planner
 ```
 
-## How It Works
+Replace `YOUR_USERNAME` with your GitHub username and use your actual repository URL.
 
-The AI Travel Planner Agent Team uses a sophisticated multi-step process to create extremely detailed travel itineraries:
+### 2. Create a Virtual Environment
 
-### 🤖 AI Agent Architecture
-- **GPT-4o Model**: Powers the intelligent travel planning with advanced reasoning capabilities
-- **Multi-MCP Integration**: Combines Airbnb and Google Maps MCP servers for real-time data
-- **Google Search Tools**: Provides current weather, reviews, and local insights
-- **Direct Response Generation**: Creates complete itineraries without asking clarifying questions
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### 3. Install Dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### 4. Configure API Keys
+
+Create the configuration file at:
+
+```text
+.streamlit/secrets.toml
+```
+
+Example configuration:
+
+```toml
+GROQ_API_KEY = "your_groq_api_key"
+TAVILY_API_KEY = "your_tavily_api_key"
+AVIATIONSTACK_API_KEY = "your_aviationstack_api_key"
+GROQ_MODEL = "your_supported_groq_model_id"
+```
+
+Replace the example values with your own credentials. The AviationStack key is optional if flight data is not needed.
+
+**Security:** Never commit your real API keys to GitHub. Keep the actual `secrets.toml` file private and commit only a safe example template.
+
+### 5. Run the Application
+
+```bash
+streamlit run app.py
+```
+
+Open the local URL shown in your terminal, usually:
+
+```text
+http://localhost:8501
+```
+
+Enter your trip details and preferences, then generate your itinerary.
+
+## 🧳 Example Trip
+
+Try the following sample input:
+
+- **Destination:** London, United Kingdom
+- **Start Date:** 15 November 2026
+- **Duration:** 3 days
+- **Budget:** $1,000 USD
+- **Arrival Airport:** LHR
+- **Travelers:** 2 adults
+
+**Travel Preferences:**
+
+```text
+Plan a 3-day London trip for 2 adults with a budget of $1,000 USD.
+
+Include:
+- Top attractions to visit
+- Budget-friendly accommodation suggestions
+- Local transport tips
+- Affordable food recommendations
+- Budget breakdown
+- Suggested visiting times
+- Practical travel tips
+
+Use a clear day-by-day format with morning, afternoon, and evening activities. Label each day as Day 1, Day 2, and Day 3.
+```
+
+The generated recommendations should be treated as AI-generated suggestions. Verify current prices, opening hours, availability, and travel information before booking.
+
+## 📁 Project Structure
+
+```text
+wanderlust-ai-travel-planner/
+│
+├── app.py                    # Main Streamlit application
+├── requirements.txt          # Python dependencies
+├── README.md                 # Project documentation
+├── .gitignore                # Git ignore rules
+│
+└── .streamlit/
+    ├── secrets.toml          # Local API credentials (not committed)
+    └── secrets.toml.example  # Safe configuration template
+```
+
+## ⚙️ How It Works
+
+1. **User Input:** The user enters the destination, start date, duration, budget, airport code, and preferences.
+2. **Travel Research:** The application uses Tavily to search for relevant travel information.
+3. **Flight Lookup:** AviationStack can provide flight information when configured.
+4. **AI Generation:** An Agno agent uses the configured Groq language model to generate a personalized itinerary.
+5. **Itinerary Display:** The generated travel plan is presented in the Streamlit interface.
+6. **Calendar Export:** The user can export itinerary information as an `.ics` file.
+
+## 🛡️ Security Best Practices
+
+- Keep API keys in `.streamlit/secrets.toml`.
+- Add the real secrets file and virtual environment to `.gitignore`.
+- Never upload API keys, passwords, or other private credentials.
+- Use Streamlit's secrets configuration when deploying the app.
+- Rotate any API key that is accidentally exposed.
+
+## 🔮 Future Improvements
+
+- React frontend with a FastAPI backend.
+- Interactive maps and route visualization.
+- Live hotel and accommodation integrations.
+- More detailed transportation and cost estimates.
+- Multi-agent travel planning workflows.
+- Improved itinerary validation and user feedback.
+
+## 👨‍💻 Author
+
+**Afzal Manihar**
+
+- **GitHub:** [Afzal Manihar](https://github.com/AfzalManihar)
+- **LinkedIn:** [Afzal Manihar](https://www.linkedin.com/in/afzal-manihar-bb0183308/)
+- **Portfolio:** [Afzal Manihar](https://afzalmanihar.github.io/)
+
+---
+
+*Wanderlust AI Travel Planner — Plan smarter, explore more.*
