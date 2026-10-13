@@ -1,6 +1,6 @@
 # 🌍 Wanderlust AI Travel Planner
 
-🚀 **Live Demo:** [Click here to try Wanderlust AI Travel Planner](YOUR_STREAMLIT_APP_URL)
+🚀 **Live Demo:** [Click here to try Wanderlust AI Travel Planner](https://wanderlust-ai-travel-planner-agent-system.streamlit.app/)
 
 An AI-powered travel planning application built with **Python, Agno, and Groq** that generates personalized, day-by-day travel itineraries based on destination, travel dates, trip duration, budget, arrival airport, and travel preferences.
 
