@@ -5,9 +5,9 @@ Run: streamlit run app.py
 Sidebar: opens on launch. Toggle with << / >> OR Ctrl + B
 """
 
-from pathlib import Path
+import os
 import re
-import tomllib
+import html
 from datetime import date, datetime, timedelta
 
 import requests
@@ -31,30 +31,32 @@ st.set_page_config(
 
 
 # ═══════════════════════════════════════════════════════════════════
-#  LOAD SECRETS
+#  LOAD SECRETS  (works locally + on Streamlit Cloud)
 # ═══════════════════════════════════════════════════════════════════
 
-SECRETS_FILE = Path(__file__).resolve().parent / ".streamlit" / "secrets.toml"
+def get_secret(name: str, default: str = "") -> str:
+    value = None
+    try:
+        # Cloud "Secrets" box OR local .streamlit/secrets.toml
+        value = st.secrets.get(name)
+    except Exception:
+        value = None
+    if not value:
+        # Fallback: environment variable
+        value = os.getenv(name, default)
+    return str(value or default).strip().strip('"').strip("'")
 
-if not SECRETS_FILE.is_file():
-    st.error("Configuration file not found. Create `.streamlit/secrets.toml`.")
-    st.stop()
 
-try:
-    with SECRETS_FILE.open("rb") as file:
-        secrets = tomllib.load(file)
-
-    GROQ_API_KEY = str(secrets.get("GROQ_API_KEY", "")).strip()
-    TAVILY_API_KEY = str(secrets.get("TAVILY_API_KEY", "")).strip()
-    AVIATIONSTACK_API_KEY = str(secrets.get("AVIATIONSTACK_API_KEY", "")).strip()
-    GROQ_MODEL = str(secrets.get("GROQ_MODEL", "openai/gpt-oss-20b")).strip()
-
-except Exception as exc:
-    st.error(f"Unable to read secrets.toml: {exc}")
-    st.stop()
+GROQ_API_KEY = get_secret("GROQ_API_KEY")
+TAVILY_API_KEY = get_secret("TAVILY_API_KEY")
+AVIATIONSTACK_API_KEY = get_secret("AVIATIONSTACK_API_KEY")
+GROQ_MODEL = get_secret("GROQ_MODEL", "openai/gpt-oss-20b")
 
 if not GROQ_API_KEY or not TAVILY_API_KEY:
-    st.error("GROQ_API_KEY and TAVILY_API_KEY are required in secrets.toml.")
+    st.error(
+        "GROQ_API_KEY and TAVILY_API_KEY are missing. "
+        "Add them in App → Settings → Secrets (or in .streamlit/secrets.toml locally)."
+    )
     st.stop()
 
 
@@ -195,8 +197,8 @@ REQUIREMENTS
         error_text = str(exc)
         if "model_not_found" in error_text.lower():
             raise RuntimeError(f"Model '{GROQ_MODEL}' unavailable.")
-        if "401" in error_text or "authentication" in error_text.lower():
-            raise RuntimeError("Groq auth failed.")
+        if "401" in error_text or "authentication" in error_text.lower() or "invalid_api_key" in error_text.lower():
+            raise RuntimeError("Groq auth failed. Check GROQ_API_KEY in Secrets.")
         if "429" in error_text or "rate_limit" in error_text.lower():
             raise RuntimeError("Rate limit reached.")
         raise RuntimeError(f"Groq error: {error_text}")
@@ -696,26 +698,28 @@ div[data-testid="stButton"] > button:active {
     text-shadow: 0 0 20px rgba(16,185,129,0.5);
 }
 
-/* ═══════════ RESULT CARD ═══════════ */
-.result-card {
-    background: linear-gradient(135deg, rgba(13,20,32,0.95) 0%, rgba(10,16,32,0.95) 100%);
-    border: 1px solid rgba(59,130,246,0.15);
-    border-radius: 20px;
-    padding: 2.5rem;
-    color: #cbd5e1;
-    line-height: 1.85;
-    font-size: 0.95rem;
+/* ═══════════ RESULT CARD (st.container with key="result_card") ═══════════ */
+.st-key-result_card {
+    background: linear-gradient(135deg, rgba(13,20,32,0.95) 0%, rgba(10,16,32,0.95) 100%) !important;
+    border: 1px solid rgba(59,130,246,0.15) !important;
+    border-radius: 20px !important;
+    padding: 2.5rem !important;
     position: relative;
     overflow: hidden;
 }
-.result-card::before {
+.st-key-result_card::before {
     content: '';
     position: absolute;
     top: 0; left: 0;
     width: 4px; height: 100%;
     background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
 }
-.result-card h1 {
+.st-key-result_card [data-testid="stMarkdownContainer"] {
+    color: #cbd5e1;
+    line-height: 1.85;
+    font-size: 0.95rem;
+}
+.st-key-result_card h1 {
     font-family: 'Space Grotesk', sans-serif;
     color: #f1f5f9 !important;
     font-size: 1.6rem;
@@ -725,7 +729,7 @@ div[data-testid="stButton"] > button:active {
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(59,130,246,0.15);
 }
-.result-card h2 {
+.st-key-result_card h2 {
     font-family: 'Space Grotesk', sans-serif;
     color: #f1f5f9 !important;
     font-size: 1.3rem;
@@ -733,45 +737,48 @@ div[data-testid="stButton"] > button:active {
     margin: 1.75rem 0 0.75rem;
     letter-spacing: -0.01em;
 }
-.result-card h3 {
+.st-key-result_card h3,
+.st-key-result_card h4 {
     color: #60a5fa !important;
     font-size: 1.05rem;
     font-weight: 600;
     margin: 1.25rem 0 0.5rem;
 }
-.result-card p, .result-card li { color: #cbd5e1 !important; }
-.result-card strong { color: #f1f5f9 !important; font-weight: 700; }
-.result-card ul, .result-card ol { padding-left: 1.5rem; }
-.result-card code {
+.st-key-result_card p,
+.st-key-result_card li { color: #cbd5e1 !important; }
+.st-key-result_card strong { color: #f1f5f9 !important; font-weight: 700; }
+.st-key-result_card ul,
+.st-key-result_card ol { padding-left: 1.5rem; }
+.st-key-result_card code {
     background: rgba(59,130,246,0.15) !important;
     color: #93c5fd !important;
     padding: 0.15em 0.45em;
     border-radius: 5px;
     font-size: 0.88em;
 }
-.result-card table {
+.st-key-result_card table {
     border-collapse: collapse;
     width: 100%;
     margin: 1.25rem 0;
     border-radius: 10px;
     overflow: hidden;
 }
-.result-card th {
-    background: rgba(59,130,246,0.1);
-    color: #93c5fd;
+.st-key-result_card th {
+    background: rgba(59,130,246,0.1) !important;
+    color: #93c5fd !important;
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding: 0.75rem 1rem;
     text-align: left;
-    border-bottom: 1px solid rgba(59,130,246,0.2);
+    border-bottom: 1px solid rgba(59,130,246,0.2) !important;
 }
-.result-card td {
+.st-key-result_card td {
     padding: 0.75rem 1rem;
-    color: #cbd5e1;
-    border-bottom: 1px solid rgba(59,130,246,0.06);
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid rgba(59,130,246,0.06) !important;
 }
-.result-card hr {
+.st-key-result_card hr {
     border: none;
     border-top: 1px solid rgba(59,130,246,0.15);
     margin: 2rem 0;
@@ -959,7 +966,7 @@ with st.sidebar:
         "Agno Agent",
     ]:
         st.markdown(
-            f'<div class="sb-chip"><span class="sb-dot"></span>{tech}</div>',
+            f'<div class="sb-chip"><span class="sb-dot"></span>{html.escape(tech)}</div>',
             unsafe_allow_html=True,
         )
 
@@ -1134,15 +1141,18 @@ if st.session_state.get("itinerary"):
     </div>
     """, unsafe_allow_html=True)
 
+    safe_destination = html.escape(str(st.session_state.get("destination", "—")))
+    safe_date = html.escape(str(st.session_state.get("trip_date", "—")))
+
     st.markdown(f"""
     <div class="metrics">
         <div class="m-card">
             <div class="m-label">Destination</div>
-            <div class="m-value">{st.session_state.get('destination', '—')}</div>
+            <div class="m-value">{safe_destination}</div>
         </div>
         <div class="m-card">
             <div class="m-label">Start Date</div>
-            <div class="m-value">{st.session_state.get('trip_date', '—')}</div>
+            <div class="m-value">{safe_date}</div>
         </div>
         <div class="m-card">
             <div class="m-label">Status</div>
@@ -1151,10 +1161,9 @@ if st.session_state.get("itinerary"):
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown(
-        f"<div class='result-card'>{st.session_state['itinerary']}</div>",
-        unsafe_allow_html=True,
-    )
+    # Native Markdown rendering (headings, tables, bold work properly)
+    with st.container(border=True, key="result_card"):
+        st.markdown(st.session_state["itinerary"])
 
     calendar_data = create_calendar(
         st.session_state["itinerary"],
@@ -1178,4 +1187,3 @@ if st.session_state.get("itinerary"):
             "</div>",
             unsafe_allow_html=True,
         )
-        
